@@ -1,0 +1,20 @@
+.h-line{
+  background-color: rgb(0, 106, 199);
+  padding: 50px 10px;
+  text-align: center;
+  color: white;
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.container{display: flex;
+  justify-content: center;
+align-items: center;
+height: 50vh;box-shadow: 10px;}
+
+
+
+.cartConnect{color: white;background-color: rgb(238, 199, 24);border: none;padding: 40px 80px;font-size:xx-large;font-weight: bolder;border-radius: 15px;box-shadow: 0 8px 5px rgba(0,0,0,0.1);
+}
+
+

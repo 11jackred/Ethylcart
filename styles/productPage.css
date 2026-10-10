@@ -1,0 +1,76 @@
+* {
+  box-sizing: border-box;
+}   
+
+.css-item-container{
+  position: relative;
+  width: 100%;
+  padding: 80px;
+  max-height: 60px;
+  margin: 1 auto;        /* center horizontally */
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}   
+
+.product-info{font-size: x-large;
+  position: absolute;
+ left: 180px;
+ top: 7px
+;}
+
+.input-quantity{  position: absolute;
+  font-size: small;
+  border-color:rgb(0, 92, 167);box-shadow: 1px 1px rgb(1, 88, 189);
+  border-radius: 8px;
+  width: 50px;
+  top: 30px;
+  left: 85px;}
+
+
+.product-price{position:relative;top:20px;}
+
+.product-quantity{position:absolute;top:90px}
+
+
+.delete-image{position: absolute;
+  width: 100px;
+  height: auto;
+  top: 5px;
+  left: 5px;
+  bottom: 2px;}
+
+.css-delete-button{ position: absolute;
+ 
+  top: 0px;
+  left: 710px;}
+
+.product-image {
+  position: absolute;
+  width: 150px;
+  height: auto;
+  top: 5px;
+  left: 5px;
+  bottom: 2px;
+}
+
+
+
+
+.buttons-container{display: flex;
+justify-content: right;
+;}
+
+
+
+.fixed-container{position: fixed;
+  bottom: 10px;
+  left: 680px;
+width: 100%;
+z-index: 1000;}
+
+
+.checkout-button{padding: 50px 70px;font-size:xx-large;font-weight: bolder;border-radius: 15px}
+
+.beInvis{display: none;}
