@@ -11,47 +11,36 @@
  //testung
     <div class="h-line js-h-line">EthylCart</div>
 
-<button id="connectBtn">Connect to ESP32</button>
-<button id="ledOn" disabled>LED ON</button>
-<button id="ledOff" disabled>LED OFF</button>
-<p id="status">Disconnected</p>
+    <button id="connectBtn">Connect</button>
+<button data-color="1">Red</button>
+<button data-color="2">Green</button>
+<button data-color="3">Blue</button>
+<button data-color="4">Yellow</button>
+<button data-color="5">Cyan</button>
+<button data-color="6">Magenta</button>
+<button data-color="7">White</button>
+<button data-color="0">Off</button>
 
 <script>
 const SERVICE_UUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
 const CHAR_UUID    = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
-
-let device, characteristic;
+let characteristic;
 
 document.getElementById('connectBtn').onclick = async () => {
-  try {
-    device = await navigator.bluetooth.requestDevice({
-      filters: [{ name: 'MyESP32' }],
-      optionalServices: [SERVICE_UUID]
-    });
-
-    const server = await device.gatt.connect();
-    const service = await server.getPrimaryService(SERVICE_UUID);
-    characteristic = await service.getCharacteristic(CHAR_UUID);
-
-    device.addEventListener('gattserverdisconnected', () => {
-      document.getElementById('status').textContent = 'Disconnected';
-    });
-
-    document.getElementById('status').textContent = 'Connected!';
-    document.getElementById('ledOn').disabled = false;
-    document.getElementById('ledOff').disabled = false;
-  } catch (e) {
-    console.error(e);
-  }
+  const device = await navigator.bluetooth.requestDevice({
+    filters: [{ name: 'MyESP32' }],
+    optionalServices: [SERVICE_UUID]
+  });
+  const server = await device.gatt.connect();
+  const service = await server.getPrimaryService(SERVICE_UUID);
+  characteristic = await service.getCharacteristic(CHAR_UUID);
 };
 
-document.getElementById('ledOn').onclick = async () => {
-  await characteristic.writeValue(new TextEncoder().encode('1'));
-};
-
-document.getElementById('ledOff').onclick = async () => {
-  await characteristic.writeValue(new TextEncoder().encode('0'));
-};
+document.querySelectorAll('[data-color]').forEach(btn => {
+  btn.onclick = async () => {
+    await characteristic.writeValue(new TextEncoder().encode(btn.dataset.color));
+  };
+});
 </script>   
 
 </body>
