@@ -1,12 +1,16 @@
+import {getProduct,products} from '../data/products.js';
+import {delete1,updateProduct} from './productFunctions.js';
 const addButton=document.querySelector('.js-add-button')
 const itemList=document.querySelector('.item-list-container')
 
 
+window.delete1 = delete1;
+window.updateProduct = updateProduct;
 
 let i=1;
-let quantity=1;
-addButton.addEventListener('click',()=>{
 
+addButton.addEventListener('click',()=>{
+const product=getProduct(i,products);
   
 
 let html;
@@ -22,11 +26,11 @@ html=
 
 <div class="product-info">
   
-  <div class="product-name">product-name</div>
+  <div class="product-name">Product name:${product.name}</div>
   
-   <div class="product-price">product-price</div>
+   <div class="product-price">Product price:${product.price}</div>
     
-   <div class="product-quantity js-product-quantity-${i}">Product-quantity:1
+   <div class="product-quantity js-product-quantity-${i}">Product-quantity:${product.quantity}
    
    <div class="product-quantity-input-${i} beInvis"><input class="input-quantity js-input-quantity-${i}" type="text"></div>
    
@@ -61,63 +65,3 @@ i++;
 
   
 })
-
-function delete1(i){
-  
- const container0= document.querySelector(`.item-container-${i}`);
-
-container0.remove();
-
-}
-
-function updateProduct(i){
-  
-  const input=
-  document.querySelector(`.product-quantity-input-${i}`); 
-
-  const inputReal= document.querySelector(`.js-input-quantity-${i}`); 
-
-  const updateSpan=document.querySelector(`.js-update-quantity-span-${i}`); 
-
-
-  if( input.classList.contains('beInvis')
-){
-
-  updateSpan.innerText='Save'
-
-  input.classList.remove('beInvis')
- 
-}
-
-else{ 
-
-  
-
-
-
-  if(inputReal.value){ 
-    
-    if(inputReal.value==='0'){ document.querySelector(`.js-delete-button-${i}`).click(); }
-    else{  document.querySelector(`.js-product-quantity-${i}`).innerHTML=`Product-quantity:${inputReal.value}
-   
-   <div class="product-quantity-input-${i} beInvis"><input class="input-quantity js-input-quantity-${i}" type="text"></div>`;
-  
-
-
-  input.classList.add('beInvis');
-
-  updateSpan.innerText='Update'}
-    
-  }
-
-  else{
-  input.classList.add('beInvis');
-
-  updateSpan.innerText='Update'}
-
-
-  }
-
- 
-
-}
