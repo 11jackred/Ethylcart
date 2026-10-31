@@ -51,6 +51,12 @@ barcodeCharacteristic.addEventListener(
         const barcode = new TextDecoder().decode(event.target.value);
 
         console.log("Barcode received:", barcode);
+
+// Send the received barcode to the main page.
+window.parent.postMessage(
+    { type: "BARCODE_RECEIVED", barcode: barcode },
+    "*"
+);
     }
 );
 

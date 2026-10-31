@@ -24,6 +24,14 @@
     </iframe>
 
     <script type="module" src="scripts/mainPage.js"></script>
-
+<script>
+    // Display barcode messages received from the cart page.
+    window.addEventListener("message", (event) => {
+        if (event.data.type === "BARCODE_RECEIVED") {
+            document.querySelector("#connectionStatus").textContent =
+                "Barcode received: " + event.data.barcode;
+        }
+    });
+</script>
 </body>
 </html>
