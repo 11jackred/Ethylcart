@@ -1,2 +1,5 @@
 Ethylcart.code-workspace
 products_export.json
+backend/wrangler.jsonc
+backend/node_modules
+node_modules
