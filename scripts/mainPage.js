@@ -42,6 +42,24 @@ setupDisconnectionListener();
         barcodeCharacteristic =
             await service.getCharacteristic(CHARACTERISTIC_UUID);
 
+
+            // Listen for incoming barcode notifications from the ESP32.
+barcodeCharacteristic.addEventListener(
+    "characteristicvaluechanged",
+    (event) => {
+        // Convert the received BLE data into readable text.
+        const barcode = new TextDecoder().decode(event.target.value);
+
+        console.log("Barcode received:", barcode);
+    }
+);
+
+// Subscribe to notifications from the ESP32.
+await barcodeCharacteristic.startNotifications();
+
+console.log("Listening for barcode notifications...");
+
+
         console.log("Connected to Ethylcart cart!");
 
         // Show the cart page without leaving index.html.
