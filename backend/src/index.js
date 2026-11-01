@@ -5,8 +5,31 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    // Allow requests from your website.
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    };
+
+    // Handle browser preflight requests.
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders
+      });
+    }
+
+    // Helper to attach CORS headers to every API response.
+    const jsonResponse = (data, status = 200) => {
+      return Response.json(data, {
+        status,
+        headers: corsHeaders
+      });
+    };
+
     if (url.pathname === "/") {
-      return Response.json({
+      return jsonResponse({
         message: "Ethylcart backend is running!"
       });
     }
@@ -17,8 +40,7 @@ export default {
     });
 
     try {
-     
-      // Find one product by barcode
+      // Find one product by barcode.
       if (
         url.pathname.startsWith("/products/barcode/") &&
         request.method === "GET"
@@ -28,9 +50,9 @@ export default {
         );
 
         if (!barcode || !/^\d+$/.test(barcode)) {
-          return Response.json(
+          return jsonResponse(
             { error: "Invalid barcode" },
-            { status: 400 }
+            400
           );
         }
 
@@ -42,16 +64,16 @@ export default {
         `;
 
         if (!product) {
-          return Response.json(
+          return jsonResponse(
             { error: "Product not found" },
-            { status: 404 }
+            404
           );
         }
 
-        return Response.json(product);
+        return jsonResponse(product);
       }
 
-      // Add a product
+      // Add a product.
       if (url.pathname === "/products" && request.method === "POST") {
         const body = await request.json();
 
@@ -66,9 +88,9 @@ export default {
             typeof body.barcode !== "string") ||
           (body.img != null && typeof body.img !== "string")
         ) {
-          return Response.json(
+          return jsonResponse(
             { error: "Invalid product data" },
-            { status: 400 }
+            400
           );
         }
 
@@ -84,10 +106,10 @@ export default {
           RETURNING id, name, barcode, img, price, weight
         `;
 
-        return Response.json(product, { status: 201 });
+        return jsonResponse(product, 201);
       }
 
-      // Delete a product by ID
+      // Delete a product by ID.
       if (
         url.pathname.startsWith("/products/") &&
         request.method === "DELETE"
@@ -95,9 +117,9 @@ export default {
         const id = url.pathname.split("/")[2];
 
         if (!/^\d+$/.test(id)) {
-          return Response.json(
+          return jsonResponse(
             { error: "Invalid product ID" },
-            { status: 400 }
+            400
           );
         }
 
@@ -108,25 +130,31 @@ export default {
         `;
 
         if (!product) {
-          return Response.json(
+          return jsonResponse(
             { error: "Product not found" },
-            { status: 404 }
+            404
           );
         }
 
-        return Response.json({
+        return jsonResponse({
           message: "Product deleted successfully",
           product
         });
       }
 
-      return Response.json({ error: "Route not found" }, { status: 404 });
+      return jsonResponse(
+        { error: "Route not found" },
+        404
+      );
+
     } catch (error) {
       console.error("Request failed:", error.message);
-      return Response.json(
+
+      return jsonResponse(
         { error: "Request failed. Check Cloudflare logs." },
-        { status: 500 }
+        500
       );
+
     } finally {
       await sql.end();
     }

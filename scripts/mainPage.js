@@ -105,14 +105,14 @@ async function findProduct(barcode) {
 
         const product = await response.json();
 
-        // Send product information to index.html.
-        window.parent.postMessage(
-            {
-                type: "PRODUCT_FOUND",
-                product: product
-            },
-            "*"
-        );
+        // Send product information to item.html.
+     cartFrame.contentWindow.postMessage(
+    {
+        type: "PRODUCT_FOUND",
+        product: product
+    },
+    "*"
+);
 
     } catch (error) {
 

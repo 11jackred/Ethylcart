@@ -1,67 +1,98 @@
-import {getProduct,products} from '../data/products.js';
-import {delete1,updateProduct} from './productFunctions.js';
-const addButton=document.querySelector('.js-add-button')
-const itemList=document.querySelector('.item-list-container')
+import { delete1, updateProduct } from './productFunctions.js';
 
+const itemList = document.querySelector('.item-list-container');
 
 window.delete1 = delete1;
 window.updateProduct = updateProduct;
 
-let i=1;
+let productsInCart = [];
+let nextId = 1;
 
-addButton.addEventListener('click',()=>{
-const product=getProduct(i,products);
-  
+// Receive products from mainPage.js
+window.addEventListener("message", (event) => {
 
-let html;
+    if (event.data.type === "PRODUCT_FOUND") {
+        addScannedProduct(event.data.product);
+    }
 
-html=
-`
- <div class="item-container-${i}">
+});
 
-<div class="item-container css-item-container">
-  
-<img class="product-image" src="images/umbrella.jpg">
+// Add scanned product to cart
+function addScannedProduct(product) {
 
+    // Check whether product already exists
+    const existingProduct = productsInCart.find(
+        item => item.barcode === product.barcode
+    );
 
-<div class="product-info">
-  
-  <div class="product-name">Product name:${product.name}</div>
-  
-   <div class="product-price">Product price:${product.price}</div>
-    
-   <div class="product-quantity js-product-quantity-${i}">Product-quantity:${product.quantity}
-   
-   <div class="product-quantity-input-${i} beInvis"><input class="input-quantity js-input-quantity-${i}" type="text"></div>
-   
-   </div>
+    if (existingProduct) {
 
+        existingProduct.quantity++;
 
-</div>
+        const quantityElement = document.querySelector(
+            `.js-product-quantity-${existingProduct.cartId}`
+        );
 
+        quantityElement.textContent =
+            `Product quantity: ${existingProduct.quantity}`;
 
+        return;
+    }
 
-<div class="buttons-container">
+    // First scan of this product
+    product.quantity = 1;
+    product.cartId = nextId++;
 
-<div> <span onclick="delete1(${i})"  class="js-delete-button-${i} css-delete-button">
+    productsInCart.push(product);
 
-  <img class="delete-image" src="images/trash-can-icon.jpg">
+    displayProduct(product);
+}
 
-</span>
-</div>
-<div><span onclick="updateProduct(${i})" class="js-update-quantity-span-${i}">Update</span></div>
+// Display product
+function displayProduct(product) {
 
-</div>
+    const id = product.cartId;
 
-</div>
+    const html = `
+        <div class="item-container-${id}">
+            <div class="item-container css-item-container">
 
-  </div>
+                <img class="product-image" src="${product.img}" alt="${product.name}">
 
+                <div class="product-info">
 
-`;
+                    <div class="product-name">
+                        Product name: ${product.name}
+                    </div>
 
-  itemList.innerHTML+=html
-i++;
+                    <div class="product-price">
+                        Product price: ${product.price}
+                    </div>
 
-  
-})
+                    <div class="product-weight">
+                        Product weight: ${product.weight}
+                    </div>
+
+                    <div class="product-quantity js-product-quantity-${id}">
+                        Product quantity: ${product.quantity}
+                    </div>
+
+                </div>
+
+                <div class="buttons-container">
+                    <span onclick="delete1(${id})"
+                        class="css-delete-button">
+                        Delete
+                    </span>
+
+                    <span onclick="updateProduct(${id})">
+                        Update
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    `;
+
+    itemList.innerHTML += html;
+}
