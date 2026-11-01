@@ -23,13 +23,18 @@
         style="display: none; width: 100%; height: 85vh; border: none;">
     </iframe>
 
+    <p id="barcodeStatus">Waiting for barcode...</p>
+
     <script type="module" src="scripts/mainPage.js"></script>
 <script>
-    // Display barcode messages received from the cart page.
+    // Listen for barcode messages from mainPage.js.
     window.addEventListener("message", (event) => {
+
         if (event.data.type === "BARCODE_RECEIVED") {
-            document.querySelector("#connectionStatus").textContent =
+
+            document.querySelector("#barcodeStatus").textContent =
                 "Barcode received: " + event.data.barcode;
+
         }
     });
 </script>
