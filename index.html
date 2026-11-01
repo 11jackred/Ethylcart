@@ -15,6 +15,10 @@
         <p id="connectionStatus">Cart not connected</p>
     </div>
 
+
+    <p id="barcodeStatus">Waiting for barcode...</p>
+ 
+    
     <!-- Cart page stays inside this iframe.
          The main page keeps the Bluetooth connection alive. -->
     <iframe
@@ -22,8 +26,6 @@
         src="item.html"
         style="display: none; width: 100%; height: 85vh; border: none;">
     </iframe>
-
-    <p id="barcodeStatus">Waiting for barcode...</p>
 
     <script type="module" src="scripts/mainPage.js"></script>
 <script>
