@@ -5,6 +5,10 @@ const SERVICE_UUID = "12345678-1234-1234-1234-123456789000";
 // UUID of the barcode characteristic.
 const CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789001";
 
+// Cloudflare Worker backend URL.
+const BACKEND_URL = "https://ethylcart-backend.jack11cards.workers.dev";
+
+
 // Get the HTML elements.
 const connectButton = document.querySelector(".js-connectCart");
 const connectionStatus = document.querySelector("#connectionStatus");
@@ -52,6 +56,9 @@ barcodeCharacteristic.addEventListener(
 
         console.log("Barcode received:", barcode);
 
+// Look up the scanned product in Neon.
+findProduct(barcode);
+
 // Send the received barcode to the main page.
 window.parent.postMessage(
     { type: "BARCODE_RECEIVED", barcode: barcode },
@@ -81,6 +88,46 @@ console.log("Listening for barcode notifications...");
         alert("Could not connect to cart: " + error.message);
     }
 });
+
+
+
+// Find a product using its scanned barcode.
+async function findProduct(barcode) {
+
+    try {
+        const response = await fetch(
+            `${BACKEND_URL}/products/barcode/${encodeURIComponent(barcode)}`
+        );
+
+        if (!response.ok) {
+            throw new Error("Product not found");
+        }
+
+        const product = await response.json();
+
+        // Send product information to index.html.
+        window.parent.postMessage(
+            {
+                type: "PRODUCT_FOUND",
+                product: product
+            },
+            "*"
+        );
+
+    } catch (error) {
+
+        // Display errors on the website.
+        window.parent.postMessage(
+            {
+                type: "PRODUCT_ERROR",
+                message: error.message
+            },
+            "*"
+        );
+    }
+}
+
+
 
 // Detect if the ESP32 disconnects.
 function handleDisconnection() {

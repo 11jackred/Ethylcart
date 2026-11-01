@@ -18,7 +18,7 @@
 
     <p id="barcodeStatus">Waiting for barcode...</p>
  
-    
+
     <!-- Cart page stays inside this iframe.
          The main page keeps the Bluetooth connection alive. -->
     <iframe
@@ -38,6 +38,21 @@
                 "Barcode received: " + event.data.barcode;
 
         }
+
+
+        if (event.data.type === "PRODUCT_FOUND") {
+    const product = event.data.product;
+
+    document.querySelector("#barcodeStatus").textContent =
+        "Product: " + product.name +
+        " | Price: " + product.price;
+}
+
+if (event.data.type === "PRODUCT_ERROR") {
+    document.querySelector("#barcodeStatus").textContent =
+        event.data.message;
+}
+
     });
 </script>
 </body>
