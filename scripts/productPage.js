@@ -57,7 +57,9 @@ function displayProduct(product) {
         <div class="item-container-${id}">
             <div class="item-container css-item-container">
 
-                <img class="product-image" src="${product.img}" alt="${product.name}">
+                <img class="product-image"
+                     src="${product.img}"
+                     alt="${product.name}">
 
                 <div class="product-info">
 
@@ -73,26 +75,37 @@ function displayProduct(product) {
                         Product weight: ${product.weight}
                     </div>
 
-                    <div class="product-quantity js-product-quantity-${id}">
+                    <div class="product-quantity js-product-quantity-${id}"
+                         data-quantity="${product.quantity}">
                         Product quantity: ${product.quantity}
                     </div>
+
+                    <input
+                        class="js-input-quantity-${id}"
+                        type="number"
+                        min="0"
+                        style="display:none;"
+                    >
 
                 </div>
 
                 <div class="buttons-container">
+
                     <span onclick="delete1(${id})"
-                        class="css-delete-button">
+                          class="js-delete-button-${id} css-delete-button">
                         Delete
                     </span>
 
-                    <span onclick="updateProduct(${id})">
+                    <span onclick="updateProduct(${id})"
+                          class="js-update-quantity-span-${id}">
                         Update
                     </span>
+
                 </div>
 
             </div>
         </div>
     `;
 
-    itemList.innerHTML += html;
+    itemList.insertAdjacentHTML("beforeend", html);
 }
