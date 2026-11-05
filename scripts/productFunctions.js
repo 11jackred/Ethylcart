@@ -40,10 +40,13 @@ export function updateProduct(i) {
 }
 
         quantityElement.dataset.quantity = newQuantity;
+
         quantityElement.textContent = `Product quantity: ${newQuantity}`;
 
-        input.style.display = "none";
-        updateSpan.innerText = "Update";
-        window.updateCartSummary();
+input.style.display = "none";
+updateSpan.innerText = "Update";
+
+window.updateProductQuantityInCart(i, newQuantity);
     }
 }
+

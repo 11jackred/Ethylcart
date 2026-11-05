@@ -33,6 +33,10 @@ function updateCartSummary() {
         `Total price: ₹${totalPrice.toFixed(2)}`;
 }
 
+
+
+
+
 // Make summary updater available to productFunctions.js
 window.updateCartSummary = updateCartSummary;
 
@@ -95,6 +99,8 @@ function addScannedProduct(product) {
 
     displayProduct(product);
     updateCartSummary();
+
+
 }
 
 // Display product
