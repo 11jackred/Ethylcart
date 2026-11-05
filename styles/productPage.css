@@ -1,76 +1,206 @@
+
 * {
-  box-sizing: border-box;
-}   
-
-.css-item-container{
-  position: relative;
-  width: 100%;
-  padding: 80px;
-  max-height: 60px;
-  margin: 1 auto;        /* center horizontally */
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}   
-
-.product-info{font-size: x-large;
-  position: absolute;
- left: 180px;
- top: 7px
-;}
-
-.input-quantity{  position: absolute;
-  font-size: small;
-  border-color:rgb(0, 92, 167);box-shadow: 1px 1px rgb(1, 88, 189);
-  border-radius: 8px;
-  width: 50px;
-  top: 30px;
-  left: 85px;}
-
-
-.product-price{position:relative;top:20px;}
-
-.product-quantity{position:absolute;top:90px}
-
-
-.delete-image{position: absolute;
-  width: 100px;
-  height: auto;
-  top: 5px;
-  left: 5px;
-  bottom: 2px;}
-
-.css-delete-button{ position: absolute;
- 
-  top: 0px;
-  left: 710px;}
-
-.product-image {
-  position: absolute;
-  width: 150px;
-  height: auto;
-  top: 5px;
-  left: 5px;
-  bottom: 2px;
+    box-sizing: border-box;
 }
 
+body {
+    margin: 0;
+    padding: 16px;
+    background: #f5f7fa;
+    font-family: Arial, sans-serif;
+    color: #202b3c;
+}
 
+/* Cart item card */
+.css-item-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 
+    width: 100%;
+    max-width: 750px;
+    min-height: 170px;
 
-.buttons-container{display: flex;
-justify-content: right;
-;}
+    padding: 18px;
+    margin: 16px auto;
 
+    background: white;
+    border: 1px solid #e5e9f0;
+    border-radius: 16px;
 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s ease;
+}
 
-.fixed-container{position: fixed;
-  bottom: 10px;
-  left: 680px;
-width: 100%;
-z-index: 1000;}
+.css-item-container:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+}
 
+/* Product image */
+.product-image {
+    width: 115px;
+    height: 115px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f8f9fb;
+}
 
-.checkout-button{padding: 50px 70px;font-size:xx-large;font-weight: bolder;border-radius: 15px}
+/* Product information */
+.product-info {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+}
 
-.beInvis{display: none;}
+.product-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #172337;
+}
+
+.product-price {
+    position: static;
+    font-size: 19px;
+    font-weight: 700;
+    color: #087b55;
+}
+
+.product-weight,
+.product-quantity {
+    position: static;
+    font-size: 14px;
+    color: #687386;
+}
+
+/* Quantity input */
+.input-quantity,
+[class*="js-input-quantity-"] {
+    width: 75px;
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+/* Buttons */
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.buttons-container span {
+    cursor: pointer;
+    text-align: center;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.js-update-quantity-span-1,
+[class*="js-update-quantity-span-"] {
+    background: #e8f0ff;
+    color: #2458bd;
+}
+
+.css-delete-button {
+    background: #fff0f0;
+    color: #d63838;
+}
+
+/* Old delete image, if used */
+.delete-image {
+    width: 20px;
+    height: 20px;
+}
+
+/* Cart list */
+.item-list-container {
+    width: 100%;
+}
+
+/* Checkout section */
+.fixed-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 14px;
+    background: white;
+    box-shadow: 0 -3px 15px rgba(0,0,0,0.08);
+    z-index: 1000;
+}
+
+.checkout-button {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    background: #1769e0;
+    color: white;
+    cursor: pointer;
+}
+
+.beInvis {
+    display: none;
+}
+
+/* Android / mobile responsive layout */
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .css-item-container {
+        gap: 12px;
+        padding: 12px;
+        min-height: 130px;
+        border-radius: 13px;
+    }
+
+    .product-image {
+        width: 85px;
+        height: 85px;
+    }
+
+    .product-info {
+        font-size: 13px;
+        gap: 7px;
+    }
+
+    .product-name {
+        font-size: 15px;
+    }
+
+    .product-price {
+        font-size: 16px;
+    }
+
+    .product-weight,
+    .product-quantity {
+        font-size: 12px;
+    }
+
+    .buttons-container {
+        gap: 7px;
+    }
+
+    .buttons-container span {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}
