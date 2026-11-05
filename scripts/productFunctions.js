@@ -35,14 +35,15 @@ export function updateProduct(i) {
         }
 
         if (newQuantity === 0) {
-            delete1(i);
-            return;
-        }
+    window.delete1(i);
+    return;
+}
 
         quantityElement.dataset.quantity = newQuantity;
         quantityElement.textContent = `Product quantity: ${newQuantity}`;
 
         input.style.display = "none";
         updateSpan.innerText = "Update";
+        window.updateCartSummary();
     }
 }

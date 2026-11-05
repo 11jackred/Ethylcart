@@ -1,7 +1,42 @@
+
 import { delete1, updateProduct } from './productFunctions.js';
 
 const itemList = document.querySelector('.item-list-container');
 
+let productsInCart = [];
+let nextId = 1;
+
+// Update the cart summary
+function updateCartSummary() {
+
+    const totalItemsElement = document.querySelector('#totalItems');
+    const totalPriceElement = document.querySelector('#totalPrice');
+
+    const totalItems = productsInCart.reduce(
+        (total, product) => total + product.quantity, 0
+    );
+
+    const totalPrice = productsInCart.reduce(
+        (total, product) => {
+            const price = Number(
+                String(product.price).replace(/[^0-9.-]/g, '')
+            );
+
+            return total + price * product.quantity;
+        },
+        0
+    );
+
+    totalItemsElement.textContent = `Total items: ${totalItems}`;
+
+    totalPriceElement.textContent =
+        `Total price: ₹${totalPrice.toFixed(2)}`;
+}
+
+// Make summary updater available to productFunctions.js
+window.updateCartSummary = updateCartSummary;
+
+// Delete product from cart
 function removeFromCart(id) {
 
     const index = productsInCart.findIndex(
@@ -13,13 +48,11 @@ function removeFromCart(id) {
     }
 
     delete1(id);
+    updateCartSummary();
 }
 
 window.delete1 = removeFromCart;
 window.updateProduct = updateProduct;
-
-let productsInCart = [];
-let nextId = 1;
 
 // Receive products from mainPage.js
 window.addEventListener("message", (event) => {
@@ -33,7 +66,6 @@ window.addEventListener("message", (event) => {
 // Add scanned product to cart
 function addScannedProduct(product) {
 
-    // Check whether product already exists
     const existingProduct = productsInCart.find(
         item => item.barcode === product.barcode
     );
@@ -46,9 +78,12 @@ function addScannedProduct(product) {
             `.js-product-quantity-${existingProduct.cartId}`
         );
 
+        quantityElement.dataset.quantity = existingProduct.quantity;
+
         quantityElement.textContent =
             `Product quantity: ${existingProduct.quantity}`;
 
+        updateCartSummary();
         return;
     }
 
@@ -59,6 +94,7 @@ function addScannedProduct(product) {
     productsInCart.push(product);
 
     displayProduct(product);
+    updateCartSummary();
 }
 
 // Display product
