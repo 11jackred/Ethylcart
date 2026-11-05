@@ -33,6 +33,18 @@ function updateCartSummary() {
         `Total price: ₹${totalPrice.toFixed(2)}`;
 }
 
+window.updateProductQuantityInCart = function(id, quantity) {
+
+    const product = productsInCart.find(
+        item => item.cartId === Number(id)
+    );
+
+    if (product) {
+        product.quantity = quantity;
+    }
+
+    updateCartSummary();
+};
 
 
 
