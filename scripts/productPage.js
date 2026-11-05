@@ -2,7 +2,17 @@ import { delete1, updateProduct } from './productFunctions.js';
 
 const itemList = document.querySelector('.item-list-container');
 
-window.delete1 = delete1;
+window.delete1 = (id) => {
+
+    // Remove product from the cart array
+    productsInCart = productsInCart.filter(
+        product => product.cartId !== id
+    );
+
+    // Remove its HTML card
+    delete1(id);
+};
+
 window.updateProduct = updateProduct;
 
 let productsInCart = [];
