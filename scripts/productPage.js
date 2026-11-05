@@ -4,6 +4,15 @@ import { delete1, updateProduct } from './productFunctions.js';
 const itemList = document.querySelector('.item-list-container');
 
 let productsInCart = [];
+
+// Save the current cart in the browser
+function saveCart() {
+    localStorage.setItem(
+        "ethylcart",
+        JSON.stringify(productsInCart)
+    );
+}
+
 let nextId = 1;
 
 // Update the cart summary
@@ -43,6 +52,7 @@ window.updateProductQuantityInCart = function(id, quantity) {
         product.quantity = quantity;
     }
 
+    saveCart();
     updateCartSummary();
 };
 
@@ -64,6 +74,7 @@ function removeFromCart(id) {
     }
 
     delete1(id);
+    saveCart();
     updateCartSummary();
 }
 
@@ -99,6 +110,7 @@ function addScannedProduct(product) {
         quantityElement.textContent =
             `Product quantity: ${existingProduct.quantity}`;
 
+        saveCart();
         updateCartSummary();
         return;
     }
@@ -110,6 +122,7 @@ function addScannedProduct(product) {
     productsInCart.push(product);
 
     displayProduct(product);
+    saveCart();
     updateCartSummary();
 
 
