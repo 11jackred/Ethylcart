@@ -17,6 +17,8 @@ const cartFrame = document.querySelector("#cartFrame");
 
 // Keep references to the Bluetooth connection.
 let cartDevice;
+// Remember the previously selected Bluetooth cart during this browser session.
+let isReconnecting = false;
 let cartServer;
 let barcodeCharacteristic;
 
@@ -146,3 +148,75 @@ function setupDisconnectionListener() {
         );
     }
 }
+
+// Try to reconnect to a previously authorized EthylCart.
+async function restoreCartConnection() {
+
+    try {
+
+        // Get Bluetooth devices previously authorized by the customer.
+        const devices = await navigator.bluetooth.getDevices();
+
+        // Find the EthylCart ESP32.
+        cartDevice = devices.find(
+            device => device.name === "Ethylcart-Cart"
+        );
+
+        // If no previously authorized cart exists, show Connect.
+        if (!cartDevice) {
+            console.log("No previously authorized cart found.");
+            return;
+        }
+
+        console.log("Previously authorized cart found.");
+
+        // Reconnect to the ESP32.
+        cartServer = await cartDevice.gatt.connect();
+
+        // Listen for unexpected disconnections.
+        setupDisconnectionListener();
+
+        // Find the BLE service.
+        const service = await cartServer.getPrimaryService(SERVICE_UUID);
+
+        // Find the barcode characteristic.
+        barcodeCharacteristic =
+            await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+        // Listen for barcode notifications.
+        barcodeCharacteristic.addEventListener(
+            "characteristicvaluechanged",
+            (event) => {
+
+                const barcode = new TextDecoder().decode(event.target.value);
+
+                console.log("Barcode received:", barcode);
+
+                findProduct(barcode);
+
+            }
+        );
+
+        // Start receiving barcode notifications.
+        await barcodeCharacteristic.startNotifications();
+
+        // Show the cart page.
+        connectionPage.style.display = "none";
+        cartFrame.style.display = "block";
+
+        console.log("Cart automatically reconnected!");
+
+    } catch (error) {
+
+        console.error("Automatic reconnection failed:", error);
+
+        connectionPage.style.display = "block";
+        cartFrame.style.display = "none";
+
+    }
+}
+
+// Restore the Bluetooth connection when the page loads.
+window.addEventListener("DOMContentLoaded", () => {
+    restoreCartConnection();
+});
