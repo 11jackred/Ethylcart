@@ -87,11 +87,11 @@ export default {
         const result = await sql.begin(async tx => {
 
           // Retrieve trusted product information from Neon.
-          const products = await tx`
-            SELECT id, name, price
-            FROM products
-            WHERE id = ANY(${productIds})
-          `;
+         const products = await tx`
+    SELECT id, name, price
+    FROM products
+    WHERE id IN ${tx(productIds)}
+`;
 
           if (products.length !== items.length) {
             return { notFound: true };
