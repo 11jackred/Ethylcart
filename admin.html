@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EthylCart | Admin</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+
+<body>
+
+    <h1>EthylCart Admin Dashboard</h1>
+
+    <!-- Admin login -->
+    <form id="adminLogin">
+
+        <h2>Admin Login</h2>
+
+        <input
+            type="password"
+            id="adminPassword"
+            placeholder="Enter admin password"
+            required
+        >
+
+        <button type="submit">Login</button>
+
+        <p id="loginMessage"></p>
+
+    </form>
+
+    <!-- Dashboard -->
+    <div id="dashboard" hidden>
+
+        <div class="dashboard-summary">
+
+            <div class="summary-card">
+                <h3>Total Orders</h3>
+                <p id="totalOrders">0</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Total Revenue</h3>
+                <p id="totalRevenue">₹0.00</p>
+            </div>
+
+        </div>
+
+        <h2>Recent Orders</h2>
+
+        <div id="ordersContainer">
+            Loading orders...
+        </div>
+
+    </div>
+
+    <script src="scripts/admin.js"></script>
+
+</body>
+</html>

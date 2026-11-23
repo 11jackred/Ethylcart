@@ -8,8 +8,8 @@ export default {
     // Allow requests from your website.
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization"
     };
 
     // Handle browser preflight requests.
@@ -40,6 +40,130 @@ export default {
     });
 
     try {
+
+
+
+      // Retrieve orders (admin only).
+      if (
+        url.pathname === "/orders" &&
+        request.method === "GET"
+      ) {
+
+        const authHeader = request.headers.get("Authorization");
+
+        if (
+          !env.ADMIN_PASSWORD ||
+          authHeader !== `Bearer ${env.ADMIN_PASSWORD}`
+        ) {
+          return jsonResponse(
+            { error: "Unauthorized" },
+            401
+          );
+        }
+
+        const orders = await sql`
+          SELECT
+            o.id,
+            o.total_items,
+            o.total_price,
+            o.status,
+            o.created_at,
+            COALESCE(
+              (
+                SELECT json_agg(
+                  json_build_object(
+                    'productId', oi.product_id,
+                    'productName', oi.product_name,
+                    'quantity', oi.quantity,
+                    'price', oi.price,
+                    'subtotal', oi.subtotal
+                  )
+                  ORDER BY oi.id
+                )
+                FROM order_items oi
+                WHERE oi.order_id = o.id
+              ),
+              '[]'::json
+            ) AS items
+          FROM orders o
+          ORDER BY o.created_at DESC
+          LIMIT 100
+        `;
+
+        return jsonResponse({ orders });
+      }
+
+
+
+
+
+      // Update order status (admin only).
+      if (
+        url.pathname.startsWith("/orders/") &&
+        request.method === "PATCH"
+      ) {
+
+        const authHeader = request.headers.get("Authorization");
+
+        if (
+          !env.ADMIN_PASSWORD ||
+          authHeader !== `Bearer ${env.ADMIN_PASSWORD}`
+        ) {
+          return jsonResponse(
+            { error: "Unauthorized" },
+            401
+          );
+        }
+
+        const orderId = url.pathname.split("/")[2];
+
+        if (!/^\d+$/.test(orderId)) {
+          return jsonResponse(
+            { error: "Invalid order ID" },
+            400
+          );
+        }
+
+        const body = await request.json();
+
+        const allowedStatuses = [
+          "confirmed",
+          "processing",
+          "completed",
+          "cancelled"
+        ];
+
+        if (!allowedStatuses.includes(body.status)) {
+          return jsonResponse(
+            { error: "Invalid order status" },
+            400
+          );
+        }
+
+        const [order] = await sql`
+          UPDATE orders
+          SET status = ${body.status}
+          WHERE id = ${orderId}
+          RETURNING id, status
+        `;
+
+        if (!order) {
+          return jsonResponse(
+            { error: "Order not found" },
+            404
+          );
+        }
+
+        return jsonResponse({
+          message: "Order status updated",
+          order
+        });
+      }
+
+
+
+
+
 
 
       // Create a new order.
