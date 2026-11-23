@@ -7,14 +7,34 @@ const passwordInput = document.querySelector("#adminPassword");
 const loginMessage = document.querySelector("#loginMessage");
 const dashboard = document.querySelector("#dashboard");
 const ordersContainer = document.querySelector("#ordersContainer");
+// Get the refresh button.
+const refreshButton = document.querySelector("#refreshOrders");
 
+// Handle admin login.
 loginForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
+    // Get the password entered by the admin.
     const password = passwordInput.value;
 
     loginMessage.textContent = "Checking password...";
+
+    // Fetch orders using the entered password.
+    await loadOrders(password, true);
+
+});
+
+// Handle the refresh button.
+refreshButton.addEventListener("click", async () => {
+
+    // Fetch the latest orders using the entered password.
+    await loadOrders(passwordInput.value, false);
+
+});
+
+// Fetch orders from the backend.
+async function loadOrders(password, isLogin) {
 
     try {
 
@@ -27,23 +47,34 @@ loginForm.addEventListener("submit", async (event) => {
 
         const result = await response.json();
 
+        // Check whether the request succeeded.
         if (!response.ok) {
-            throw new Error(result.error || "Login failed");
+            throw new Error(result.error || "Request failed");
         }
 
-        loginForm.hidden = true;
-        dashboard.hidden = false;
+        // Show the dashboard after successful login.
+        if (isLogin) {
+            loginForm.hidden = true;
+            dashboard.hidden = false;
+        }
 
+        // Display the latest orders.
         displayOrders(result.orders);
 
     } catch (error) {
 
         console.error(error);
-        loginMessage.textContent = "Incorrect password or server error.";
+
+        // Show the appropriate error message.
+        if (isLogin) {
+            loginMessage.textContent = "Incorrect password or server error.";
+        } else {
+            alert("Could not refresh orders.");
+        }
 
     }
 
-});
+}
 
 function displayOrders(orders) {
 
