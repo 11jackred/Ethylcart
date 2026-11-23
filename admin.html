@@ -3,6 +3,8 @@
 <html>
 <head>
     <title>EthylCart | Admin</title>
+    <!-- Ask search engines not to index the admin page. -->
+<meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="styles/admin.css">
 </head>
 
@@ -45,12 +47,17 @@
 
         </div>
 
-<!-- Recent orders section with a refresh button. -->
+<!-- Recent orders section with action buttons. -->
 <div class="orders-header">
+
     <h2>Recent Orders</h2>
 
     <!-- Button to fetch the latest orders. -->
     <button id="refreshOrders">Refresh Orders</button>
+
+    <!-- Button to log out of the admin dashboard. -->
+    <button id="logoutButton">Logout</button>
+
 </div>
 
         <div id="ordersContainer">

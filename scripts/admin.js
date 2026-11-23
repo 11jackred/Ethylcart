@@ -9,6 +9,8 @@ const dashboard = document.querySelector("#dashboard");
 const ordersContainer = document.querySelector("#ordersContainer");
 // Get the refresh button.
 const refreshButton = document.querySelector("#refreshOrders");
+// Get the logout button.
+const logoutButton = document.querySelector("#logoutButton");
 
 // Handle admin login.
 loginForm.addEventListener("submit", async (event) => {
@@ -202,3 +204,19 @@ status.addEventListener("change", async () => {
     });
 
 }
+// Handle admin logout.
+logoutButton.addEventListener("click", () => {
+
+    // Hide the dashboard.
+    dashboard.hidden = true;
+
+    // Show the login form again.
+    loginForm.hidden = false;
+
+    // Clear the password field.
+    passwordInput.value = "";
+
+    // Clear the login message.
+    loginMessage.textContent = "";
+
+});
