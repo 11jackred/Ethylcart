@@ -40,6 +40,150 @@ export default {
     });
 
     try {
+
+
+      // Create a new order.
+      if (url.pathname === "/orders" && request.method === "POST") {
+
+        const body = await request.json();
+
+        if (
+          !Array.isArray(body.items) ||
+          body.items.length === 0 ||
+          body.items.length > 100
+        ) {
+          return jsonResponse(
+            { error: "Invalid or empty order" },
+            400
+          );
+        }
+
+        const items = body.items.map(item => ({
+          productId: Number(item.productId),
+          quantity: Number(item.quantity)
+        }));
+
+        if (items.some(item =>
+          !Number.isSafeInteger(item.productId) ||
+          item.productId <= 0 ||
+          !Number.isSafeInteger(item.quantity) ||
+          item.quantity <= 0
+        )) {
+          return jsonResponse(
+            { error: "Invalid product ID or quantity" },
+            400
+          );
+        }
+
+        const productIds = items.map(item => item.productId);
+
+        if (new Set(productIds).size !== productIds.length) {
+          return jsonResponse(
+            { error: "Duplicate products in order" },
+            400
+          );
+        }
+
+        const result = await sql.begin(async tx => {
+
+          // Retrieve trusted product information from Neon.
+          const products = await tx`
+            SELECT id, name, price
+            FROM products
+            WHERE id = ANY(${productIds})
+          `;
+
+          if (products.length !== items.length) {
+            return { notFound: true };
+          }
+
+          const productMap = new Map(
+            products.map(product => [
+              String(product.id),
+              product
+            ])
+          );
+
+          let totalItems = 0;
+          let totalPrice = 0;
+
+          for (const item of items) {
+            const product = productMap.get(
+              String(item.productId)
+            );
+
+            totalItems += item.quantity;
+
+            totalPrice +=
+              Number(product.price) * item.quantity;
+          }
+
+          totalPrice = Number(totalPrice.toFixed(2));
+
+          // Create the order.
+          const [order] = await tx`
+            INSERT INTO orders (
+              total_items,
+              total_price,
+              status
+            )
+            VALUES (
+              ${totalItems},
+              ${totalPrice},
+              'confirmed'
+            )
+            RETURNING id, total_items, total_price, status
+          `;
+
+          // Save individual order items.
+          for (const item of items) {
+
+            const product = productMap.get(
+              String(item.productId)
+            );
+
+            const price = Number(product.price);
+
+            const subtotal = Number(
+              (price * item.quantity).toFixed(2)
+            );
+
+            await tx`
+              INSERT INTO order_items (
+                order_id,
+                product_id,
+                product_name,
+                quantity,
+                price,
+                subtotal
+              )
+              VALUES (
+                ${order.id},
+                ${product.id},
+                ${product.name},
+                ${item.quantity},
+                ${price},
+                ${subtotal}
+              )
+            `;
+          }
+
+          return { order };
+        });
+
+        if (result.notFound) {
+          return jsonResponse(
+            { error: "One or more products were not found" },
+            404
+          );
+        }
+
+        return jsonResponse({
+          message: "Order created successfully",
+          order: result.order
+        }, 201);
+      }
+
       // Find one product by barcode.
       if (
         url.pathname.startsWith("/products/barcode/") &&
