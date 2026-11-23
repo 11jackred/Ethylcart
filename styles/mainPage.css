@@ -57,3 +57,18 @@ height: 50vh;box-shadow: 10px;}
 #connectionStatus {
     text-align: center;
 }
+/* Custom EthylCart font */
+@font-face {
+    font-family: 'GiantRobotArmy';
+    src: url('../fonts/GiantRobotArmy-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* EthylCart heading */
+h1 {
+    font-family: 'GiantRobotArmy', sans-serif;
+}
+*{
+    font-family: 'GiantRobotArmy', sans-serif;
+}
