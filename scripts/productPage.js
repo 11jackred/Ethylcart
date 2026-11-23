@@ -145,16 +145,13 @@ function displayProduct(product) {
 
                 <div class="product-info">
 
-                    <div class="product-name">
-                        Product name: ${product.name}
+                    <div class="product-name">${product.name}
                     </div>
 
-                    <div class="product-price">
-                        Product price: ${product.price}
+                    <div class="product-price">${product.price}
                     </div>
 
-                    <div class="product-weight">
-                        Product weight: ${product.weight}
+                    <div class="product-weight">${product.weight}
                     </div>
 
                     <div class="product-quantity js-product-quantity-${id}"
