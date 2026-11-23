@@ -69,9 +69,14 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
             throw new Error(result.error || "Order failed");
         }
 
-        alert(
-            `Order confirmed! Your order ID is ${result.order.id}`
-        );
+     // Clear the cart only after successful order creation.
+localStorage.removeItem("ethylcart");
+
+alert(
+    `Order confirmed! Your order ID is ${result.order.id}`
+);
+
+window.location.href = "item.html";
 
     } catch (error) {
 
