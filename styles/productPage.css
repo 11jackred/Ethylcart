@@ -205,3 +205,58 @@ body {
         font-size: 12px;
     }
 }
+
+/* Blurred background overlay */
+.checkout-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1000;
+
+    justify-content: center;
+    align-items: center;
+}
+
+/* Popup box */
+.checkout-popup {
+    background: white;
+    padding: 30px;
+    width: 85%;
+    max-width: 350px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Popup heading */
+.checkout-popup h2 {
+    margin-top: 0;
+    font-size: 22px;
+}
+
+/* Popup buttons */
+.popup-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.popup-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+/* Popup button text colors */
+#backToCart {
+    color: #3b3838;
+}
+
+#confirmCheckout {
+    color: rgb(52, 108, 194);
+}

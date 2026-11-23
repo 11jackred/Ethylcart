@@ -204,3 +204,24 @@ productsInCart.forEach(product => {
 
 // Update cart summary
 updateCartSummary();
+
+// Checkout popup elements
+const checkoutButton = document.querySelector(".js-checkout-button");
+const checkoutPopup = document.querySelector("#checkoutPopup");
+const backToCartButton = document.querySelector("#backToCart");
+const confirmCheckoutButton = document.querySelector("#confirmCheckout");
+
+// Show popup when Checkout is clicked
+checkoutButton.addEventListener("click", () => {
+    checkoutPopup.style.display = "flex";
+});
+
+// Close popup when Back to Cart is clicked
+backToCartButton.addEventListener("click", () => {
+    checkoutPopup.style.display = "none";
+});
+
+// Go to checkout page when Confirm Order is clicked
+confirmCheckoutButton.addEventListener("click", () => {
+    window.location.href = "checkout.html";
+});
