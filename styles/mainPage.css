@@ -24,8 +24,8 @@ height: 50vh;box-shadow: 10px;}
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 14px 35px;
-    font-size: 17px;
+    padding: 20px 40px;
+    font-size: 30px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -56,6 +56,8 @@ height: 50vh;box-shadow: 10px;}
 /* Center the connection status */
 #connectionStatus {
     text-align: center;
+  
+    font-size: 25px;
 }
 /* Custom EthylCart font */
 @font-face {
