@@ -1,18 +1,7 @@
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>EthylCart | Checkout</title>
-
-    <link rel="stylesheet" href="styles/mainPage.css">
-    <link rel="stylesheet" href="styles/productPage.css">
-</head>
-
 <body>
 
     <h1>Checkout</h1>
-
-    <div id="checkoutItems"></div>
 
     <div class="checkout-summary">
 
@@ -24,6 +13,13 @@
 
     </div>
 
+    <button
+        id="backToCart"
+        class="checkout-button"
+        onclick="window.location.href='item.html'">
+        Back to Cart
+    </button>
+
     <button id="confirmOrder" class="checkout-button">
         Confirm Order
     </button>
@@ -31,4 +27,3 @@
     <script src="scripts/checkout.js"></script>
 
 </body>
-</html>

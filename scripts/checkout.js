@@ -4,13 +4,11 @@ const productsInCart = JSON.parse(
     localStorage.getItem("ethylcart") || "[]"
 );
 
-const checkoutItems = document.querySelector("#checkoutItems");
-
 // Calculate totals
 let totalItems = 0;
 let totalPrice = 0;
 
-// Display products
+// Calculate cart totals
 productsInCart.forEach(product => {
 
     const quantity = Number(product.quantity);
@@ -22,37 +20,6 @@ productsInCart.forEach(product => {
     totalItems += quantity;
     totalPrice += price * quantity;
 
-    const html = `
-        <div class="css-item-container">
-
-            <img class="product-image"
-                 src="${product.img}"
-                 alt="${product.name}">
-
-            <div class="product-info">
-
-                <div class="product-name">
-                    ${product.name}
-                </div>
-
-                <div>
-                    Price: ₹${price.toFixed(2)}
-                </div>
-
-                <div>
-                    Quantity: ${quantity}
-                </div>
-
-                <div>
-                    Subtotal: ₹${(price * quantity).toFixed(2)}
-                </div>
-
-            </div>
-
-        </div>
-    `;
-
-    checkoutItems.insertAdjacentHTML("beforeend", html);
 });
 
 // Display final totals
