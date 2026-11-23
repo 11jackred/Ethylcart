@@ -3,7 +3,9 @@ import { delete1, updateProduct } from './productFunctions.js';
 
 const itemList = document.querySelector('.item-list-container');
 
-let productsInCart = [];
+let productsInCart = JSON.parse(
+    localStorage.getItem("ethylcart") || "[]"
+);
 
 // Save the current cart in the browser
 function saveCart() {
@@ -189,3 +191,16 @@ function displayProduct(product) {
 
     itemList.insertAdjacentHTML("beforeend", html);
 }
+;
+// Restore previously saved cart products
+productsInCart.forEach(product => {
+    displayProduct(product);
+
+    nextId = Math.max(
+        nextId,
+        Number(product.cartId) + 1
+    );
+});
+
+// Update cart summary
+updateCartSummary();
