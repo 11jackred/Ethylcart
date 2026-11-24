@@ -260,17 +260,3 @@ body {
 #confirmCheckout {
     color: rgb(52, 108, 194);
 }
-/* Custom EthylCart font */
-@font-face {
-    font-family: 'GiantRobotArmy';
-    src: url('../fonts/GiantRobotArmy-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-}
-
-.checkout-popup{
-    font-family: 'GiantRobotArmy', sans-serif;
-}
-.popup-buttons button{
-    font-family: 'GiantRobotArmy', sans-serif;
-}
