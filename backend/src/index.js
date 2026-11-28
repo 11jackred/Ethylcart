@@ -42,7 +42,7 @@ export default {
 
     const sql = postgres(env.HYPERDRIVE.connectionString, {
       max: 5,
-      fetch_types: false
+      fetch_types: false,prepare: true
     });
 
     try {
