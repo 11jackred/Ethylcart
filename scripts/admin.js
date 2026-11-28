@@ -71,7 +71,7 @@ async function loadOrders(password, isLogin) {
                 cache: "no-store",
                 headers: {
                     "Authorization": `Bearer ${password}`,
-                    "Cache-Control": "no-cache"
+                 
                 }
             }
         );
