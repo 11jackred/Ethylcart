@@ -1,6 +1,11 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>EthylCart | Checkout</title>
 
     <link rel="stylesheet" href="styles/checkout.css">
@@ -8,30 +13,65 @@
 
 <body>
 
-    <h1>Checkout</h1>
+    <main class="checkout-container">
 
-    <div class="checkout-summary">
+        <h1>Checkout</h1>
 
-        <h2>Order Summary</h2>
+        <section class="checkout-summary">
 
-        <p id="checkoutTotalItems">Total items: 0</p>
+            <h2>Order Summary</h2>
 
-        <h2 id="checkoutTotalPrice">Total: ₹0.00</h2>
+            <p id="checkoutTotalItems">Total items: 0</p>
 
-    </div>
+            <h2 id="checkoutTotalPrice">Total: ₹0.00</h2>
 
-    <button
-        id="backToCart"
-        class="checkout-button"
-        onclick="window.location.href='item.html'">
-        Back to Cart
-    </button>
+        </section>
 
-    <button id="confirmOrder" class="checkout-button">
-        PAY NOW
-    </button>
+        <section class="payment-section">
+
+            <h2>Payment Method</h2>
+
+            <label class="payment-option">
+                <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="offline"
+                    checked
+                >
+
+                <span>
+                    <strong>Pay Offline</strong>
+                    <small>Pay at the store checkout counter.</small>
+                </span>
+            </label>
+
+            <!-- Online payment options can be added here later. -->
+
+        </section>
+
+        <div class="checkout-actions">
+
+            <button
+                id="backToCart"
+                class="checkout-button"
+                type="button"
+                onclick="window.location.href='item.html'">
+                Back to Cart
+            </button>
+
+            <button
+                id="confirmOrder"
+                class="checkout-button"
+                type="button">
+                Place Order
+            </button>
+
+        </div>
+
+    </main>
 
     <script src="scripts/checkout.js"></script>
 
 </body>
+
 </html>

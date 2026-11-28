@@ -4,22 +4,19 @@ const productsInCart = JSON.parse(
     localStorage.getItem("ethylcart") || "[]"
 );
 
-// Calculate totals
+// Calculate cart totals
 let totalItems = 0;
 let totalPrice = 0;
 
-// Calculate cart totals
 productsInCart.forEach(product => {
-
     const quantity = Number(product.quantity);
 
     const price = Number(
-        String(product.price).replace(/[^0-9.-]/g, '')
+        String(product.price).replace(/[^0-9.-]/g, "")
     );
 
     totalItems += quantity;
     totalPrice += price * quantity;
-
 });
 
 // Display final totals
@@ -30,7 +27,7 @@ document.querySelector("#checkoutTotalPrice").textContent =
     `Total: ₹${totalPrice.toFixed(2)}`;
 
 
-// Pay Now button — simulated payment
+// Place order
 document.querySelector("#confirmOrder").addEventListener("click", async () => {
 
     if (productsInCart.length === 0) {
@@ -38,26 +35,24 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
         return;
     }
 
-    // Simulate the customer's payment confirmation.
-    const paymentSuccessful = confirm(
-        "ETHYLCART TEST PAYMENT\n\n" +
-        "This is a simulated payment. No real money will be charged.\n\n" +
-        "Click OK to simulate successful payment."
+    // Read selected payment method
+    const selectedPayment = document.querySelector(
+        'input[name="paymentMethod"]:checked'
     );
 
-    if (!paymentSuccessful) {
-        alert("Payment cancelled.");
+    if (!selectedPayment) {
+        alert("Please select a payment method.");
         return;
     }
+
+    const paymentMethod = selectedPayment.value;
 
     const button = document.querySelector("#confirmOrder");
 
     button.disabled = true;
-    button.textContent = "Processing...";
+    button.textContent = "Placing order...";
 
     try {
-
-        // Create the order after simulated payment success.
         const response = await fetch(
             "https://ethylcart-backend.jack11cards.workers.dev/orders",
             {
@@ -66,6 +61,8 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
+                    paymentMethod: paymentMethod,
+
                     items: productsInCart.map(product => ({
                         productId: Number(product.id),
                         quantity: Number(product.quantity)
@@ -80,26 +77,25 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
             throw new Error(result.error || "Order failed");
         }
 
-        // Clear cart after successful order creation.
+        // Clear cart after successful order creation
         localStorage.removeItem("ethylcart");
 
         alert(
-            `Test payment successful!\nOrder ID: ${result.order.id}\n\nNo real money was charged.`
+            `Order placed successfully!\n\n` +
+            `Order ID: ${result.order.id}\n` +
+            `Payment method: ${result.order.payment_method}\n` +
+            `Payment status: ${result.order.payment_status}`
         );
 
         window.location.href = "item.html";
 
     } catch (error) {
-
         console.error(error);
-        alert("Could not process your order: " + error.message);
+        alert("Could not place your order: " + error.message);
 
     } finally {
-
         button.disabled = false;
-        button.textContent = "Pay Now";
-
+        button.textContent = "Place Order";
     }
 
 });
-

@@ -5,14 +5,12 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Allow requests from your website.
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization"
     };
 
-    // Handle browser preflight requests.
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -20,7 +18,6 @@ export default {
       });
     }
 
-    // Helper to attach CORS headers to every API response.
     const jsonResponse = (data, status = 200) => {
       return Response.json(data, {
         status,
@@ -41,24 +38,18 @@ export default {
 
     try {
 
-
-
       // Retrieve orders (admin only).
       if (
         url.pathname === "/orders" &&
         request.method === "GET"
       ) {
-
         const authHeader = request.headers.get("Authorization");
 
         if (
           !env.ADMIN_PASSWORD ||
           authHeader !== `Bearer ${env.ADMIN_PASSWORD}`
         ) {
-          return jsonResponse(
-            { error: "Unauthorized" },
-            401
-          );
+          return jsonResponse({ error: "Unauthorized" }, 401);
         }
 
         const orders = await sql`
@@ -67,6 +58,8 @@ export default {
             o.total_items,
             o.total_price,
             o.status,
+            o.payment_method,
+            o.payment_status,
             o.created_at,
             COALESCE(
               (
@@ -93,35 +86,24 @@ export default {
         return jsonResponse({ orders });
       }
 
-
-
-
-
       // Update order status (admin only).
       if (
         url.pathname.startsWith("/orders/") &&
         request.method === "PATCH"
       ) {
-
         const authHeader = request.headers.get("Authorization");
 
         if (
           !env.ADMIN_PASSWORD ||
           authHeader !== `Bearer ${env.ADMIN_PASSWORD}`
         ) {
-          return jsonResponse(
-            { error: "Unauthorized" },
-            401
-          );
+          return jsonResponse({ error: "Unauthorized" }, 401);
         }
 
         const orderId = url.pathname.split("/")[2];
 
         if (!/^\d+$/.test(orderId)) {
-          return jsonResponse(
-            { error: "Invalid order ID" },
-            400
-          );
+          return jsonResponse({ error: "Invalid order ID" }, 400);
         }
 
         const body = await request.json();
@@ -134,10 +116,7 @@ export default {
         ];
 
         if (!allowedStatuses.includes(body.status)) {
-          return jsonResponse(
-            { error: "Invalid order status" },
-            400
-          );
+          return jsonResponse({ error: "Invalid order status" }, 400);
         }
 
         const [order] = await sql`
@@ -148,10 +127,7 @@ export default {
         `;
 
         if (!order) {
-          return jsonResponse(
-            { error: "Order not found" },
-            404
-          );
+          return jsonResponse({ error: "Order not found" }, 404);
         }
 
         return jsonResponse({
@@ -160,15 +136,11 @@ export default {
         });
       }
 
-
-
-
-
-
-
       // Create a new order.
-      if (url.pathname === "/orders" && request.method === "POST") {
-
+      if (
+        url.pathname === "/orders" &&
+        request.method === "POST"
+      ) {
         const body = await request.json();
 
         if (
@@ -178,6 +150,17 @@ export default {
         ) {
           return jsonResponse(
             { error: "Invalid or empty order" },
+            400
+          );
+        }
+
+        // Only offline payments are enabled for now.
+        // Online payment methods can be added later.
+        const paymentMethod = body.paymentMethod;
+
+        if (paymentMethod !== "offline") {
+          return jsonResponse(
+            { error: "Unsupported payment method" },
             400
           );
         }
@@ -211,11 +194,11 @@ export default {
         const result = await sql.begin(async tx => {
 
           // Retrieve trusted product information from Neon.
-         const products = await tx`
-    SELECT id, name, price
-    FROM products
-    WHERE id IN ${tx(productIds)}
-`;
+          const products = await tx`
+            SELECT id, name, price
+            FROM products
+            WHERE id IN ${tx(productIds)}
+          `;
 
           if (products.length !== items.length) {
             return { notFound: true };
@@ -237,31 +220,38 @@ export default {
             );
 
             totalItems += item.quantity;
-
-            totalPrice +=
-              Number(product.price) * item.quantity;
+            totalPrice += Number(product.price) * item.quantity;
           }
 
           totalPrice = Number(totalPrice.toFixed(2));
 
-          // Create the order.
+          // Create order with pending offline payment.
           const [order] = await tx`
             INSERT INTO orders (
               total_items,
               total_price,
-              status
+              status,
+              payment_method,
+              payment_status
             )
             VALUES (
               ${totalItems},
               ${totalPrice},
-              'confirmed'
+              'confirmed',
+              ${paymentMethod},
+              'pending'
             )
-            RETURNING id, total_items, total_price, status
+            RETURNING
+              id,
+              total_items,
+              total_price,
+              status,
+              payment_method,
+              payment_status
           `;
 
           // Save individual order items.
           for (const item of items) {
-
             const product = productMap.get(
               String(item.productId)
             );
@@ -318,10 +308,7 @@ export default {
         );
 
         if (!barcode || !/^\d+$/.test(barcode)) {
-          return jsonResponse(
-            { error: "Invalid barcode" },
-            400
-          );
+          return jsonResponse({ error: "Invalid barcode" }, 400);
         }
 
         const [product] = await sql`
@@ -332,17 +319,17 @@ export default {
         `;
 
         if (!product) {
-          return jsonResponse(
-            { error: "Product not found" },
-            404
-          );
+          return jsonResponse({ error: "Product not found" }, 404);
         }
 
         return jsonResponse(product);
       }
 
       // Add a product.
-      if (url.pathname === "/products" && request.method === "POST") {
+      if (
+        url.pathname === "/products" &&
+        request.method === "POST"
+      ) {
         const body = await request.json();
 
         if (
@@ -356,10 +343,7 @@ export default {
             typeof body.barcode !== "string") ||
           (body.img != null && typeof body.img !== "string")
         ) {
-          return jsonResponse(
-            { error: "Invalid product data" },
-            400
-          );
+          return jsonResponse({ error: "Invalid product data" }, 400);
         }
 
         const [product] = await sql`
@@ -385,10 +369,7 @@ export default {
         const id = url.pathname.split("/")[2];
 
         if (!/^\d+$/.test(id)) {
-          return jsonResponse(
-            { error: "Invalid product ID" },
-            400
-          );
+          return jsonResponse({ error: "Invalid product ID" }, 400);
         }
 
         const [product] = await sql`
@@ -398,10 +379,7 @@ export default {
         `;
 
         if (!product) {
-          return jsonResponse(
-            { error: "Product not found" },
-            404
-          );
+          return jsonResponse({ error: "Product not found" }, 404);
         }
 
         return jsonResponse({
@@ -410,10 +388,7 @@ export default {
         });
       }
 
-      return jsonResponse(
-        { error: "Route not found" },
-        404
-      );
+      return jsonResponse({ error: "Route not found" }, 404);
 
     } catch (error) {
       console.error("Request failed:", error.message);

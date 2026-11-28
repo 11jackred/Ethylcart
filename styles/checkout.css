@@ -12,16 +12,23 @@ h1 {
     margin-bottom: 35px;
 }
 
-.checkout-summary {
+.checkout-container {
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+.checkout-summary,
+.payment-section {
     max-width: 500px;
-    margin: 30px auto;
+    margin: 25px auto;
     padding: 25px;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-.checkout-summary h2 {
+.checkout-summary h2,
+.payment-section h2 {
     margin-top: 0;
 }
 
@@ -33,6 +40,42 @@ h1 {
 #checkoutTotalPrice {
     border-top: 1px solid #ddd;
     padding-top: 20px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.payment-option:has(input:checked) {
+    border: 2px solid #222;
+    background-color: #f8f8f8;
+}
+
+.payment-option input {
+    width: 18px;
+    height: 18px;
+    accent-color: #222;
+}
+
+.payment-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.payment-option small {
+    color: #666;
+    font-size: 13px;
+}
+
+.checkout-actions {
+    margin-top: 25px;
 }
 
 .checkout-button {
@@ -51,4 +94,9 @@ h1 {
 
 .checkout-button:hover {
     background-color: #444;
+}
+
+.checkout-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
