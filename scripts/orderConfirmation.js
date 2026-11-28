@@ -130,7 +130,7 @@ if (!checkout) {
 
         paymentCheckInterval = setInterval(
             checkPaymentStatus,
-            3000
+            1000
         );
     }
 }
