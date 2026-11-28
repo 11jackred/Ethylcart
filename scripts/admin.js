@@ -101,10 +101,9 @@ async function loadOrders(password, isLogin) {
     } catch (error) {
         console.error("Order refresh failed:", error);
 
-        if (isLogin) {
-            loginMessage.textContent =
-                "Incorrect password or server error.";
-        } else {
+     if (isLogin) {
+    loginMessage.textContent = error.message;
+} else {
             console.error("Could not refresh orders.");
         }
 
