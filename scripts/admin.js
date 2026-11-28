@@ -1,6 +1,4 @@
-
-const API_URL =
-    "https://ethylcart-backend.jack11cards.workers.dev";
+const API_URL = "https://ethylcart-backend.jack11cards.workers.dev";
 
 const loginForm = document.querySelector("#adminLogin");
 const passwordInput = document.querySelector("#adminPassword");
