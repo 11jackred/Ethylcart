@@ -25,6 +25,15 @@ export default {
       });
     };
 
+    const hashToken = async (token) => {
+  const data = new TextEncoder().encode(token);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+
+  return Array.from(new Uint8Array(hash))
+    .map(byte => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
+
     if (url.pathname === "/") {
       return jsonResponse({
         message: "Ethylcart backend is running!"
@@ -87,6 +96,8 @@ export default {
       }
 
       // Update order status (admin only).
+    
+      // Update order status or verify payment (admin only).
       if (
         url.pathname.startsWith("/orders/") &&
         request.method === "PATCH"
@@ -108,6 +119,51 @@ export default {
 
         const body = await request.json();
 
+        // Verify payment using the customer's QR token.
+        if (body.paymentStatus === "paid") {
+
+          if (
+            typeof body.verificationToken !== "string" ||
+            !body.verificationToken
+          ) {
+            return jsonResponse(
+              { error: "Verification token required" },
+              400
+            );
+          }
+
+          const tokenHash = await hashToken(
+            body.verificationToken
+          );
+
+          const [order] = await sql`
+            UPDATE orders
+            SET
+              payment_status = 'paid',
+              payment_qr_token_hash = NULL
+            WHERE
+              id = ${orderId}
+              AND payment_qr_token_hash = ${tokenHash}
+              AND payment_status = 'pending'
+            RETURNING id, payment_status
+          `;
+
+          if (!order) {
+            return jsonResponse(
+              {
+                error: "Invalid QR code or payment already processed"
+              },
+              409
+            );
+          }
+
+          return jsonResponse({
+            message: "Payment verified successfully",
+            order
+          });
+        }
+
+        // Otherwise, update the normal order status.
         const allowedStatuses = [
           "confirmed",
           "processing",
@@ -116,7 +172,10 @@ export default {
         ];
 
         if (!allowedStatuses.includes(body.status)) {
-          return jsonResponse({ error: "Invalid order status" }, 400);
+          return jsonResponse(
+            { error: "Invalid order status" },
+            400
+          );
         }
 
         const [order] = await sql`
@@ -127,7 +186,10 @@ export default {
         `;
 
         if (!order) {
-          return jsonResponse({ error: "Order not found" }, 404);
+          return jsonResponse(
+            { error: "Order not found" },
+            404
+          );
         }
 
         return jsonResponse({
@@ -135,6 +197,7 @@ export default {
           order
         });
       }
+
 
       // Create a new order.
       if (
@@ -191,6 +254,8 @@ export default {
           );
         }
 
+        const qrToken = crypto.randomUUID();
+        const qrTokenHash = await hashToken(qrToken);
         const result = await sql.begin(async tx => {
 
           // Retrieve trusted product information from Neon.
@@ -227,28 +292,30 @@ export default {
 
           // Create order with pending offline payment.
           const [order] = await tx`
-            INSERT INTO orders (
-              total_items,
-              total_price,
-              status,
-              payment_method,
-              payment_status
-            )
-            VALUES (
-              ${totalItems},
-              ${totalPrice},
-              'confirmed',
-              ${paymentMethod},
-              'pending'
-            )
-            RETURNING
-              id,
-              total_items,
-              total_price,
-              status,
-              payment_method,
-              payment_status
-          `;
+  INSERT INTO orders (
+    total_items,
+    total_price,
+    status,
+    payment_method,
+    payment_status,
+    payment_qr_token_hash
+  )
+  VALUES (
+    ${totalItems},
+    ${totalPrice},
+    'confirmed',
+    ${paymentMethod},
+    'pending',
+    ${qrTokenHash}
+  )
+  RETURNING
+    id,
+    total_items,
+    total_price,
+    status,
+    payment_method,
+    payment_status
+`;
 
           // Save individual order items.
           for (const item of items) {
@@ -292,10 +359,13 @@ export default {
           );
         }
 
-        return jsonResponse({
+          return jsonResponse({
           message: "Order created successfully",
-          order: result.order
-        }, 201);
+          order: {
+          ...result.order,
+          qrToken
+          }
+          }, 201);
       }
 
       // Find one product by barcode.

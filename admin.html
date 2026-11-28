@@ -47,6 +47,33 @@
 
         </div>
 
+
+<section id="paymentScannerSection">
+    <h2>Payment Verification</h2>
+
+    <button type="button" id="startScanner">
+        Start QR Scanner
+    </button>
+
+    <div id="qrReader" style="width: 300px; max-width: 100%;"></div>
+
+    <p id="scannerMessage">
+        Scan a customer's checkout QR code.
+    </p>
+
+    <div id="scannedOrder" hidden>
+        <h3>Checkout Details</h3>
+        <p id="scannedOrderId"></p>
+        <p id="scannedOrderTotal"></p>
+        <p id="scannedPaymentStatus"></p>
+
+        <button type="button" id="confirmPayment">
+            Confirm Payment Received
+        </button>
+    </div>
+</section>
+
+
 <!-- Recent orders section with action buttons. -->
 <div class="orders-header">
 
@@ -65,8 +92,8 @@
         </div>
 
     </div>
-
-    <script src="scripts/admin.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="scripts/admin.js"></script>
 
 </body>
 </html>

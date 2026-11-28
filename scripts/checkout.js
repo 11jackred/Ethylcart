@@ -77,9 +77,7 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
             throw new Error(result.error || "Order failed");
         }
 
-        // Clear cart after successful order creation
-        localStorage.removeItem("ethylcart");
-
+      
       
         // Save checkout information for confirmation page
         sessionStorage.setItem(
@@ -87,12 +85,14 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
             JSON.stringify({
                 id: result.order.id,
                 total: result.order.total_price,
+                qrToken: result.order.qrToken,
                 items: productsInCart.map(product => ({
                     name: product.name,
                     quantity: Number(product.quantity)
                 }))
             })
         );
+
 
         // Clear cart after successful checkout recording
         localStorage.removeItem("ethylcart");
