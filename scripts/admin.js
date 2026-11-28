@@ -347,13 +347,23 @@ confirmPaymentButton.addEventListener("click", async () => {
             );
         }
 
-        scannerMessage.textContent =
-            `Payment successfully verified for checkout #${currentScannedOrder.id}.`;
+       scannerMessage.textContent =
+    `Payment successfully verified for checkout #${currentScannedOrder.id}.`;
 
-        scannedOrderSection.hidden = true;
-        currentScannedOrder = null;
+const paidOrderId = currentScannedOrder.id;
 
-        await loadOrders(passwordInput.value, false);
+const order = latestOrders.find(
+    item => String(item.id) === String(paidOrderId)
+);
+
+if (order) {
+    order.payment_status = "paid";
+}
+
+displayOrders(latestOrders);
+
+scannedOrderSection.hidden = true;
+currentScannedOrder = null;
 
     } catch (error) {
         console.error(error);
