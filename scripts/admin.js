@@ -35,23 +35,24 @@ loginForm.addEventListener("submit", async (event) => {
 // Refresh orders.
 const refreshStatus = document.querySelector("#refreshStatus");
 
+
 refreshButton.addEventListener("click", async () => {
     refreshButton.disabled = true;
     refreshStatus.textContent = "⏳ Refreshing...";
+    refreshStatus.style.color = "#64748b";
 
     try {
-      const success = await loadOrders(passwordInput.value, false);
+        const success = await loadOrders(
+            passwordInput.value,
+            false
+        );
 
-if (!success) {
-    refreshStatus.textContent = "✕ Failed!";
-    refreshStatus.style.color = "#dc2626";
-    return;
-}
-        refreshStatus.textContent = "✓ Updated!";
-        refreshStatus.style.color = "#16a34a";
-    } catch (error) {
-        refreshStatus.textContent = "✕ Failed!";
-        refreshStatus.style.color = "#dc2626";
+        refreshStatus.textContent =
+            success ? "✓ Updated!" : "✕ Failed!";
+
+        refreshStatus.style.color =
+            success ? "#16a34a" : "#dc2626";
+
     } finally {
         refreshButton.disabled = false;
 
@@ -64,14 +65,18 @@ if (!success) {
 
 // Load orders from backend.
 async function loadOrders(password, isLogin) {
-
     try {
-        const response = await fetch(`${API_URL}/orders`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${password}`
+        const response = await fetch(
+            `${API_URL}/orders?t=${Date.now()}`,
+            {
+                method: "GET",
+                cache: "no-store",
+                headers: {
+                    "Authorization": `Bearer ${password}`,
+                    "Cache-Control": "no-cache"
+                }
             }
-        });
+        );
 
         const result = await response.json();
 
@@ -79,29 +84,33 @@ async function loadOrders(password, isLogin) {
             throw new Error(result.error || "Request failed");
         }
 
+        if (!Array.isArray(result.orders)) {
+            throw new Error("Invalid orders response");
+        }
+
+        latestOrders = result.orders;
+        displayOrders(latestOrders);
+
         if (isLogin) {
             loginForm.hidden = true;
             dashboard.hidden = false;
         }
 
-        latestOrders = result.orders;
-
-        displayOrders(latestOrders);
         return true;
+
     } catch (error) {
-        console.error(error);
+        console.error("Order refresh failed:", error);
 
         if (isLogin) {
             loginMessage.textContent =
                 "Incorrect password or server error.";
         } else {
-            alert("Could not refresh orders.");
+            console.error("Could not refresh orders.");
         }
 
         return false;
     }
 }
-
 
 // Display orders.
 
@@ -391,3 +400,8 @@ logoutButton.addEventListener("click", async () => {
     scannedOrderSection.hidden = true;
     scannerMessage.textContent = "Scan a customer's checkout QR code.";
 });
+setInterval(() => {
+    if (!dashboard.hidden) {
+        loadOrders(passwordInput.value, false);
+    }
+}, 5000);
