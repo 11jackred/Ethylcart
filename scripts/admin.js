@@ -33,8 +33,32 @@ loginForm.addEventListener("submit", async (event) => {
 
 
 // Refresh orders.
+const refreshStatus = document.querySelector("#refreshStatus");
+
 refreshButton.addEventListener("click", async () => {
-    await loadOrders(passwordInput.value, false);
+    refreshButton.disabled = true;
+    refreshStatus.textContent = "⏳ Refreshing...";
+
+    try {
+      const success = await loadOrders(passwordInput.value, false);
+
+if (!success) {
+    refreshStatus.textContent = "✕ Failed!";
+    refreshStatus.style.color = "#dc2626";
+    return;
+}
+        refreshStatus.textContent = "✓ Updated!";
+        refreshStatus.style.color = "#16a34a";
+    } catch (error) {
+        refreshStatus.textContent = "✕ Failed!";
+        refreshStatus.style.color = "#dc2626";
+    } finally {
+        refreshButton.disabled = false;
+
+        setTimeout(() => {
+            refreshStatus.textContent = "";
+        }, 3000);
+    }
 });
 
 
@@ -63,7 +87,7 @@ async function loadOrders(password, isLogin) {
         latestOrders = result.orders;
 
         displayOrders(latestOrders);
-
+        return true;
     } catch (error) {
         console.error(error);
 
@@ -73,6 +97,8 @@ async function loadOrders(password, isLogin) {
         } else {
             alert("Could not refresh orders.");
         }
+
+        return false;
     }
 }
 
