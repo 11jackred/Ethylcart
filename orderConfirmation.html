@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EthylCart | Checkout Confirmation</title>
+
+    <link rel="stylesheet" href="styles/checkout.css">
+</head>
+
+<body>
+
+    <main class="checkout-container">
+
+        <section class="checkout-summary">
+
+            <h1>You're ready to pay!</h1>
+
+            <p>Your shopping cart has been recorded successfully.</p>
+
+            <h2>Checkout Details</h2>
+
+            <p id="sessionId"></p>
+
+            <div id="confirmationItems"></div>
+
+            <h2 id="confirmationTotal"></h2>
+
+            <p id="confirmationPayment"></p>
+
+            <p id="confirmationStatus"></p>
+
+            <p class="payment-instruction">
+                Please proceed to the store's payment counter
+                to complete your payment.
+            </p>
+
+        </section>
+
+        <button
+            class="checkout-button"
+            onclick="window.location.href='index.html'">
+            Finish
+        </button>
+
+    </main>
+
+    <script src="scripts/orderConfirmation.js"></script>
+
+</body>
+
+</html>

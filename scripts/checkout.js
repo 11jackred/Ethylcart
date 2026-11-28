@@ -80,14 +80,26 @@ document.querySelector("#confirmOrder").addEventListener("click", async () => {
         // Clear cart after successful order creation
         localStorage.removeItem("ethylcart");
 
-        alert(
-            `Order placed successfully!\n\n` +
-            `Order ID: ${result.order.id}\n` +
-            `Payment method: ${result.order.payment_method}\n` +
-            `Payment status: ${result.order.payment_status}`
+      
+        // Save checkout information for confirmation page
+        sessionStorage.setItem(
+            "ethylcartCheckout",
+            JSON.stringify({
+                id: result.order.id,
+                total: result.order.total_price,
+                items: productsInCart.map(product => ({
+                    name: product.name,
+                    quantity: Number(product.quantity)
+                }))
+            })
         );
 
-        window.location.href = "item.html";
+        // Clear cart after successful checkout recording
+        localStorage.removeItem("ethylcart");
+
+        // Open confirmation page
+        window.location.href = "order-confirmation.html";
+
 
     } catch (error) {
         console.error(error);

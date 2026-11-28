@@ -100,3 +100,22 @@ h1 {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.payment-instruction {
+    margin-top: 25px;
+    padding: 15px;
+    background-color: #f5f6f8;
+    border-radius: 8px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+#sessionId {
+    color: #666;
+    font-size: 14px;
+}
+
+#confirmationItems p {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
