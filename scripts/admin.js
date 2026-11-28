@@ -78,8 +78,8 @@ async function loadOrders(password, isLogin) {
 
 
 // Display orders.
-function displayOrders(orders) {
 
+function displayOrders(orders) {
     const totalOrders = orders.length;
 
     const totalRevenue = orders.reduce(
@@ -87,9 +87,7 @@ function displayOrders(orders) {
         0
     );
 
-    document.querySelector("#totalOrders").textContent =
-        totalOrders;
-
+    document.querySelector("#totalOrders").textContent = totalOrders;
     document.querySelector("#totalRevenue").textContent =
         `₹${totalRevenue.toFixed(2)}`;
 
@@ -101,109 +99,66 @@ function displayOrders(orders) {
     ordersContainer.innerHTML = "";
 
     orders.forEach(order => {
-
         const orderCard = document.createElement("div");
-        orderCard.className = "summary-card";
+        orderCard.className = "order-card";
 
         const heading = document.createElement("h3");
-        heading.textContent = `Order #${order.id}`;
+        heading.className = "order-title";
+        heading.textContent = `Checkout #${order.id}`;
 
         const date = document.createElement("p");
-        date.textContent =
-            new Date(order.created_at).toLocaleString();
+        date.className = "order-date";
+        date.textContent = new Date(order.created_at).toLocaleString();
 
         const total = document.createElement("p");
+        total.className = "order-total";
         total.textContent =
             `Total: ₹${Number(order.total_price).toFixed(2)}`;
 
-        const paymentStatus = document.createElement("p");
-        paymentStatus.textContent =
-            `Payment: ${order.payment_status || "Unknown"}`;
+        const paymentStatus = document.createElement("span");
+        const payment = (order.payment_status || "unknown").toLowerCase();
 
-        const status = document.createElement("select");
+        paymentStatus.className = `status-badge payment-${payment}`;
+        paymentStatus.textContent = `Payment: ${payment.toUpperCase()}`;
 
-        const statuses = [
-            "confirmed",
-            "processing",
-            "completed",
-            "cancelled"
-        ];
+        const orderStatus = document.createElement("span");
+        const status = (order.status || "unknown").toLowerCase();
 
-        statuses.forEach(value => {
-            const option = document.createElement("option");
-
-            option.value = value;
-            option.textContent =
-                value.charAt(0).toUpperCase() + value.slice(1);
-
-            if (value === order.status) {
-                option.selected = true;
-            }
-
-            status.appendChild(option);
-        });
+        orderStatus.className = `status-badge order-${status}`;
+        orderStatus.textContent = `Checkout: ${status.toUpperCase()}`;
 
         const products = document.createElement("div");
+        products.className = "order-products";
+
+        const productsHeading = document.createElement("h4");
+        productsHeading.textContent = "Items";
+
+        products.appendChild(productsHeading);
 
         (order.items || []).forEach(item => {
             const product = document.createElement("p");
-
             product.textContent =
                 `${item.productName} × ${item.quantity}`;
 
             products.appendChild(product);
         });
 
-        // Update normal order status.
-        status.addEventListener("change", async () => {
-
-            try {
-                const response = await fetch(
-                    `${API_URL}/orders/${order.id}`,
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                `Bearer ${passwordInput.value}`
-                        },
-                        body: JSON.stringify({
-                            status: status.value
-                        })
-                    }
-                );
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        result.error || "Status update failed"
-                    );
-                }
-
-                alert(`Order #${order.id} status updated!`);
-
-                order.status = status.value;
-
-            } catch (error) {
-                console.error(error);
-                alert("Could not update order status.");
-                status.value = order.status;
-            }
-        });
+        const statusContainer = document.createElement("div");
+        statusContainer.className = "status-container";
+        statusContainer.append(paymentStatus, orderStatus);
 
         orderCard.append(
             heading,
             date,
             total,
-            paymentStatus,
-            status,
+            statusContainer,
             products
         );
 
         ordersContainer.appendChild(orderCard);
     });
 }
+
 
 
 // Start QR scanner.
