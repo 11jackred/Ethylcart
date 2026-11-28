@@ -502,8 +502,6 @@ export default {
         500
       );
 
-    } finally {
-      await sql.end();
-    }
+    } 
   }
 };
