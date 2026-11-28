@@ -173,7 +173,7 @@ export default {
           const [order] = await sql`
             UPDATE orders
             SET
-              payment_status = 'paid',
+              payment_status = 'paid'
            
             WHERE
               id = ${orderId}
