@@ -1,43 +1,225 @@
 
+/* General page styling */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 30px;
-    background-color: #f5f6fa;
+    padding: 25px;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
 }
 
+/* Main heading */
 h1 {
-    margin-bottom: 30px;
+    background: #172554;
+    color: white;
+    padding: 25px;
+    margin: -25px -25px 30px;
+    font-size: 26px;
 }
 
-.dashboard-summary {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 35px;
-}
-
-.summary-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 200px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.summary-card h3 {
-    color: #666;
+h2 {
+    color: #1e3a8a;
     margin-top: 0;
 }
 
-.summary-card p {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 0;
+h3 {
+    color: #334155;
 }
 
+/* Login form */
+#adminLogin {
+    max-width: 400px;
+    margin: 70px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* Buttons */
+button {
+    padding: 11px 17px;
+    border: none;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#logoutButton {
+    background: #dc2626;
+}
+
+#logoutButton:hover {
+    background: #b91c1c;
+}
+
+#confirmPayment {
+    background: #16a34a;
+}
+
+#confirmPayment:hover {
+    background: #15803d;
+}
+
+/* Dashboard summary */
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    border-left: 5px solid #2563eb;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+
+.summary-card h3 {
+    margin: 0;
+    font-size: 15px;
+    color: #64748b;
+}
+
+.summary-card p {
+    margin: 12px 0 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+/* Payment scanner */
+#paymentScannerSection {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+
+#qrReader {
+    margin-top: 18px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#scannerMessage,
+#loginMessage {
+    color: #64748b;
+    font-size: 14px;
+}
+
+#scannedOrder {
+    margin-top: 20px;
+    padding: 18px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 9px;
+}
+
+/* Recent orders heading */
+.orders-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.orders-header h2 {
+    margin-right: auto;
+}
+
+/* Order cards and containers */
 #ordersContainer {
-    background-color: white;
+    display: grid;
+    gap: 15px;
+}
+
+#ordersContainer > div,
+.order-card {
+    background: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* General text */
+#ordersContainer p {
+    line-height: 1.6;
+}
+
+/* Dropdowns */
+select {
+    padding: 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+}
+
+/* Responsive layout */
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+
+    h1 {
+        margin: -15px -15px 20px;
+        font-size: 21px;
+    }
+
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .orders-header {
+        align-items: stretch;
+    }
+
+    .orders-header h2 {
+        width: 100%;
+    }
+
+    .orders-header button {
+        flex: 1;
+    }
+
+    #paymentScannerSection {
+        padding: 17px;
+    }
 }
