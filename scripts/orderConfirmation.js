@@ -1,7 +1,13 @@
 
+const API_URL =
+    "https://ethylcart-backend.jack11cards.workers.dev";
+
 const checkout = JSON.parse(
     sessionStorage.getItem("ethylcartCheckout") || "null"
 );
+
+const statusElement =
+    document.querySelector("#confirmationStatus");
 
 if (!checkout) {
     document.querySelector(".checkout-summary").innerHTML =
@@ -18,8 +24,7 @@ if (!checkout) {
     document.querySelector("#confirmationPayment").textContent =
         "Payment method: Pay Offline";
 
-    document.querySelector("#confirmationStatus").textContent =
-        "Payment status: Pending";
+    statusElement.textContent = "Payment status: Pending";
 
     const itemsContainer =
         document.querySelector("#confirmationItems");
@@ -33,10 +38,11 @@ if (!checkout) {
         itemsContainer.appendChild(product);
     });
 
-    // Generate customer payment verification QR.
+    // Generate customer payment QR.
     if (checkout.qrToken) {
 
-        const qrContainer = document.querySelector("#paymentQR");
+        const qrContainer =
+            document.querySelector("#paymentQR");
 
         if (qrContainer) {
             qrContainer.innerHTML = "";
@@ -64,10 +70,67 @@ if (!checkout) {
             };
 
             document.head.appendChild(script);
-
         }
 
     } else {
         console.error("QR verification token is missing.");
+    }
+
+    // Automatically check payment status.
+    let paymentCheckInterval = null;
+
+    async function checkPaymentStatus() {
+        try {
+            const response = await fetch(
+                `${API_URL}/orders/payment-status`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        orderId: checkout.id,
+                        verificationToken: checkout.qrToken
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error || "Payment status check failed"
+                );
+            }
+
+            if (result.paymentStatus === "paid") {
+                statusElement.textContent =
+                    "Payment Successful";
+
+                if (paymentCheckInterval) {
+                    clearInterval(paymentCheckInterval);
+                    paymentCheckInterval = null;
+                }
+
+                const qrSection =
+                    document.querySelector(".payment-qr-section");
+
+                if (qrSection) {
+                    qrSection.hidden = true;
+                }
+            }
+
+        } catch (error) {
+            console.error("Payment status check failed:", error);
+        }
+    }
+
+    if (checkout.qrToken) {
+        checkPaymentStatus();
+
+        paymentCheckInterval = setInterval(
+            checkPaymentStatus,
+            3000
+        );
     }
 }

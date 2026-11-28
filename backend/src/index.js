@@ -46,6 +46,40 @@ export default {
     });
 
     try {
+            // Customer: check payment status using the private QR token.
+      if (
+        url.pathname === "/orders/payment-status" &&
+        request.method === "POST"
+      ) {
+        const body = await request.json();
+
+        if (
+          !/^\d+$/.test(String(body.orderId)) ||
+          typeof body.verificationToken !== "string" ||
+          !body.verificationToken
+        ) {
+          return jsonResponse({ error: "Invalid request" }, 400);
+        }
+
+        const tokenHash = await hashToken(body.verificationToken);
+
+        const [order] = await sql`
+          SELECT payment_status
+          FROM orders
+          WHERE
+            id = ${body.orderId}
+            AND payment_qr_token_hash = ${tokenHash}
+          LIMIT 1
+        `;
+
+        if (!order) {
+          return jsonResponse({ error: "Invalid verification token" }, 404);
+        }
+
+        return jsonResponse({
+          paymentStatus: order.payment_status
+        });
+      }
 
       // Retrieve orders (admin only).
       if (
@@ -140,7 +174,7 @@ export default {
             UPDATE orders
             SET
               payment_status = 'paid',
-              payment_qr_token_hash = NULL
+           
             WHERE
               id = ${orderId}
               AND payment_qr_token_hash = ${tokenHash}
